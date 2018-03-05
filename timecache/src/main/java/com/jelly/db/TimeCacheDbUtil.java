@@ -72,11 +72,11 @@ public class TimeCacheDbUtil {
                     Log.i("", "--db==>query"  + new Gson().fromJson(value,clazz) );
                     return new Gson().fromJson(value,clazz);
                 }
-                throw  new NullException("没有找到相应的值");
+                return null;
         }
         cur.close();
         db.close();
-        throw  new NullException("没有找到相应的值");
+        return null;
     }
 
     /**
