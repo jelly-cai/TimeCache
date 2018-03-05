@@ -20,20 +20,15 @@ public class TimeCacheDbHelper extends SQLiteOpenHelper{
         super(context, DATABASE_NAME, null, VERSION);
     }
 
-
     @Override
     public void onCreate(SQLiteDatabase db) {
-        StringBuilder cacheBuffer = new StringBuilder();
-        cacheBuffer.append("create table if not exists" + " "
-                + DATABASE_TABLE); // 表名
-        cacheBuffer.append("(");
-        cacheBuffer.append("id INTEGER PRIMARY KEY AUTOINCREMENT,");
-        cacheBuffer.append("key varchar(60) unique,");
-        cacheBuffer.append("value text,");
-        cacheBuffer.append("savetime varchar(13),");
-        cacheBuffer.append("cachetime int(8)");
-        cacheBuffer.append(")");
-        db.execSQL(cacheBuffer.toString());
+        String createSql = "create table if not exists" + DATABASE_TABLE; // 表名
+        createSql += "(id INTEGER PRIMARY KEY AUTOINCREMENT,";
+        createSql += "key text unique,";
+        createSql += "value text,";
+        createSql += "savetime text,";
+        createSql += "cachetime integer)";
+        db.execSQL(createSql);
     }
 
     @Override
