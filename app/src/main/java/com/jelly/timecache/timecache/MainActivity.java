@@ -7,6 +7,8 @@ import android.widget.Button;
 
 import com.jelly.timecache.TimeCache;
 
+import java.util.concurrent.TimeUnit;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,6 +20,14 @@ public class MainActivity extends AppCompatActivity {
 
     private Button saveObject;
     private Button getObject;
+
+    private Button saveTime;
+    private Button getTime;
+
+    private Button saveExists;
+    private Button getExists;
+
+    private Button btnClearCache;
 
     private  int i = 1;
     private TimeCache timeCache;
@@ -36,6 +46,14 @@ public class MainActivity extends AppCompatActivity {
         saveObject = findViewById(R.id.btn_save_object);
         getObject = findViewById(R.id.btn_get_object);
 
+        saveTime = findViewById(R.id.btn_save_time);
+        getTime = findViewById(R.id.btn_get_time);
+
+        saveExists = findViewById(R.id.btn_save_exists);
+        getExists = findViewById(R.id.btn_get_exists);
+
+        btnClearCache = findViewById(R.id.btn_clear_cache);
+
         timeCache = TimeCache.getTimeCache(getApplicationContext());
 
         saveInteger.setOnClickListener(new View.OnClickListener() {
@@ -49,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         getInteger.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               ToastUtils.showMessage(MainActivity.this, TimeCache.getTimeCache(MainActivity.this).getValue("test",Integer.class) + "");
+               ToastUtils.showMessage(MainActivity.this, timeCache.getInteger("test") + "");
             }
         });
 
@@ -63,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         getDouble.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ToastUtils.showMessage(MainActivity.this,TimeCache.getTimeCache(MainActivity.this).getValue("test1",Double.class) + "");
+                ToastUtils.showMessage(MainActivity.this,timeCache.getDouble("test1") + "");
             }
         });
 
@@ -80,8 +98,48 @@ public class MainActivity extends AppCompatActivity {
         getObject.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Man man = TimeCache.getTimeCache(MainActivity.this).getValue("test2",Man.class);
+                Man man = timeCache.get("test2",Man.class);
                 ToastUtils.showMessage(MainActivity.this,"man-name:" + man.getName() + "man-age:" + man.getAge());
+            }
+        });
+
+        saveTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                timeCache.setCacheTime(1, TimeUnit.SECONDS);
+                timeCache.put("test3","JellyCai");
+            }
+        });
+
+        getTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ToastUtils.showMessage(MainActivity.this,timeCache.getString("test3"));
+            }
+        });
+
+        saveExists.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!timeCache.isExists("test4",String.class)){
+                    timeCache.put("test4","test4");
+                }
+            }
+        });
+
+        getExists.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(timeCache.isExists("test4",String.class)){
+                    ToastUtils.showMessage(MainActivity.this,timeCache.getString("test4"));
+                }
+            }
+        });
+
+        btnClearCache.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                timeCache.clearCache();
             }
         });
 

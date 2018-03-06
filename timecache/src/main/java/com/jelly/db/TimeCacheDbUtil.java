@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -38,6 +37,14 @@ public class TimeCacheDbUtil {
     }
 
     /**
+     * 设置缓存时间
+     * @param cacheTime
+     */
+    public void setCacheTime(Long cacheTime) {
+        this.CACHE_TIME = cacheTime;
+    }
+
+    /**
      * 获得写数据的数据库操作的对象
      * @return
      */
@@ -56,14 +63,14 @@ public class TimeCacheDbUtil {
     }
 
     /**
-     * 新增缓存
+     * 新增缓存,如果缓存存在，先删除再新增
      * @param key 键
      * @param value 值
      * @return
      */
     public long addCache(String key,Object value){
         SQLiteDatabase db = getWritableDatabase();
-        deleteCache(key,db);
+        deleteCache(key,db); //清除已存在缓存
         ContentValues increase = new ContentValues();
         increase.put(TimeCacheDbHelper.KEY_FIELD,key);
         String values = value.getClass().isPrimitive() ? value + "" : new Gson().toJson(value);//判断是否为基本数据类型
@@ -76,7 +83,7 @@ public class TimeCacheDbUtil {
     }
 
     /**
-     * 根据key获取值
+     * 根据key获取值，如果判断存在的值和现在取的值相同并且时间不超过1分钟直接返回对象
      * @param key
      * @param clazz
      * @return
@@ -88,9 +95,9 @@ public class TimeCacheDbUtil {
             cur.moveToNext();
             long cacheTime = cur.getLong(cur.getColumnIndex(TimeCacheDbHelper.CACHE_TIME_FIELD));
             long saveTime = Long.parseLong(cur.getString(cur.getColumnIndex(TimeCacheDbHelper.SAVE_TIME_FIELD)));
-            long perTime = System.currentTimeMillis();
+            long curTime = System.currentTimeMillis();
             String value = cur.getString(cur.getColumnIndex(TimeCacheDbHelper.VALUE_FIELD));
-            if((perTime - saveTime) < cacheTime){
+            if((curTime - saveTime) < cacheTime){
                 //在保存时间内
                 return new Gson().fromJson(value,clazz);
             }
@@ -114,6 +121,21 @@ public class TimeCacheDbUtil {
     }
 
     /**
+     * 是否存在Key
+     * @param key
+     * @param c
+     * @param <T>
+     * @return
+     */
+    public <T> boolean isExists(String key,Class<T> c){
+        if(getCacheByKey(key,c) == null){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    /**
      * 删除key对应的缓存,不会关闭数据库连接
      * @param key
      * @param db 数据库对象
@@ -122,24 +144,6 @@ public class TimeCacheDbUtil {
     public long deleteCache(String key, SQLiteDatabase db){
         int status = db.delete(TimeCacheDbHelper.DATABASE_TABLE, TimeCacheDbHelper.KEY_FIELD + " = ?", new String[]{key});
         return status;
-    }
-
-    /**
-     * 更新Cache
-     * @param key
-     * @param isUpdataTime 是否更新返
-     * */
-    public void updataCache(String key,Object value,boolean isUpdataTime){
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues cvtime = new ContentValues();
-        if(isUpdataTime){
-            cvtime.put("savetime", System.currentTimeMillis());
-        }
-        cvtime.put("cachetime", CACHE_TIME);
-        String values = value.getClass().isPrimitive() ? value+"":new Gson().toJson(value);//判断是否为基本数据类型
-        cvtime.put("value",value.toString());
-        int status = db.update(TimeCacheDbHelper.DATABASE_TABLE, cvtime, "key=?", new String[] {key});
-        db.close();
     }
 
     /**
