@@ -21,27 +21,27 @@ public class TimeCacheDbHelper extends SQLiteOpenHelper {
     /**
      * 缓存表名
      */
-    public static final String DATABASE_TABLE = "cache";
+    protected static final String DATABASE_TABLE = "cache";
     /**
      * id字段自动增长
      */
-    public static final String ID_FIELD = "id";
+    protected static final String ID_FIELD = "id";
     /**
      * 缓存的key
      */
-    public static final String KEY_FIELD = "key";
+    protected static final String KEY_FIELD = "key";
     /**
      * 缓存的value
      */
-    public static final String VALUE_FIELD = "value";
+    protected static final String VALUE_FIELD = "value";
     /**
      * 保存的时间
      */
-    public static final String SAVE_TIME_FIELD = "save_time";
+    protected static final String SAVE_TIME_FIELD = "save_time";
     /**
      * 缓存时间
      */
-    public static final String CACHE_TIME_FIELD = "cache_time";
+    protected static final String CACHE_TIME_FIELD = "cache_time";
 
     /**
      * 建表语句

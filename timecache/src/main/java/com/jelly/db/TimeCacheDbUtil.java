@@ -4,8 +4,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 
 import com.google.gson.Gson;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Author YC
@@ -83,6 +87,37 @@ public class TimeCacheDbUtil {
     }
 
     /**
+     *
+     * @param map key -valuer
+     */
+    public void addBatch(Map<String,Object> map){
+        SQLiteDatabase db = getWritableDatabase();
+        deleteBatch(map.keySet(),db);
+        StringBuilder sql = new StringBuilder();
+        sql.append(" INSERT INTO ")
+                .append(TimeCacheDbHelper.DATABASE_TABLE)
+                .append(" ( ").append(TimeCacheDbHelper.KEY_FIELD)
+                .append(",").append(TimeCacheDbHelper.VALUE_FIELD)
+                .append(",").append(TimeCacheDbHelper.SAVE_TIME_FIELD)
+                .append(",").append(TimeCacheDbHelper.CACHE_TIME_FIELD).append(" ) ")
+                .append("VALUES(?,?,?,?)");
+        db.beginTransaction();
+        SQLiteStatement stmt = db.compileStatement(sql.toString());
+        for(Map.Entry<String,Object> entry:map.entrySet()){
+            Object valuer = entry.getValue();
+            String valuers = valuer.getClass().isPrimitive() ? valuer.toString():new Gson().toJson(valuer);
+            stmt.bindString(1,entry.getKey());
+            stmt.bindString(2,valuers);
+            stmt.bindString(3,System.currentTimeMillis()+"");
+            stmt.bindString(4,CACHE_TIME+"");
+            stmt.execute();
+            stmt.clearBindings();
+        }
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        db.close();
+    }
+    /**
      * 根据key获取值，如果判断存在的值和现在取的值相同并且时间不超过1分钟直接返回对象
      * @param key
      * @param clazz
@@ -109,6 +144,52 @@ public class TimeCacheDbUtil {
     }
 
     /**
+     *
+     * 批量清空keys 不关闭连接
+     * @param keys
+     */
+    private void deleteBatch(Set<String> keys,SQLiteDatabase db){
+        StringBuilder buffer = new StringBuilder();
+        buffer.append("delete from ")
+                .append(TimeCacheDbHelper.DATABASE_TABLE)
+                .append(" where ").append(TimeCacheDbHelper.KEY_FIELD)
+                .append(" IN ")
+                .append("(");
+        StringBuilder bufferMap = new StringBuilder();
+        for(String key:keys){
+            bufferMap.append(key).append(",");
+        }
+        buffer.deleteCharAt(buffer.length()-1);
+        buffer.append(bufferMap.toString());
+        buffer.append(")");
+        db.execSQL(buffer.toString());//先清空存在的key
+    }
+
+    /**
+     *
+     * 批量清空keys
+     * @param keys
+     */
+    public void deleteBatch(Set<String> keys){
+        SQLiteDatabase db = getReadableDatabase();
+        StringBuilder buffer = new StringBuilder();
+        buffer.append("delete from ")
+                .append(TimeCacheDbHelper.DATABASE_TABLE)
+                .append(" where ")
+                .append(TimeCacheDbHelper.KEY_FIELD)
+                .append(" IN ")
+                .append("(");
+        StringBuilder bufferMap = new StringBuilder();
+        for(String key:keys){
+            bufferMap.append(key).append(",");
+        }
+        buffer.deleteCharAt(buffer.length()-1);
+        buffer.append(bufferMap.toString());
+        buffer.append(")");
+        db.execSQL(buffer.toString());
+        db.close();
+    }
+   /**
      * 删除key对应的缓存，会关闭数据库连接
      * @param key
      * @return
