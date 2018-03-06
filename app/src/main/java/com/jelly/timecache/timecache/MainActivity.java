@@ -4,7 +4,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.jelly.timecache.TimeCache;
 
@@ -17,6 +16,12 @@ public class MainActivity extends AppCompatActivity {
     private Button saveDouble;
     private Button getDouble;
 
+    private Button saveObject;
+    private Button getObject;
+
+    private  int i = 1;
+    private TimeCache timeCache;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,32 +33,55 @@ public class MainActivity extends AppCompatActivity {
         saveDouble = findViewById(R.id.btn_save_double);
         getDouble = findViewById(R.id.btn_get_double);
 
+        saveObject = findViewById(R.id.btn_save_object);
+        getObject = findViewById(R.id.btn_get_object);
+
+        timeCache = TimeCache.getTimeCache(getApplicationContext());
+
         saveInteger.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TimeCache.getInstance(MainActivity.this).put("test",1);
+                timeCache.put("test",i);
+                i++;
             }
         });
 
         getInteger.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainActivity.this, TimeCache.getInstance(MainActivity.this).getValue("test",Integer.class) + "",Toast.LENGTH_LONG).show();
+               ToastUtils.showMessage(MainActivity.this, TimeCache.getTimeCache(MainActivity.this).getValue("test",Integer.class) + "");
             }
         });
 
         saveDouble.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TimeCache.getInstance(MainActivity.this).put("test1",1.12);
+                timeCache.put("test1",1.12);
             }
         });
 
         getDouble.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainActivity.this,TimeCache.getInstance(MainActivity.this).getValue("test1",Double.class) + "",Toast.LENGTH_LONG).show();
+                ToastUtils.showMessage(MainActivity.this,TimeCache.getTimeCache(MainActivity.this).getValue("test1",Double.class) + "");
+            }
+        });
 
+        saveObject.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Man man = new Man();
+                man.setName("JellyCai");
+                man.setAge(23);
+                timeCache.put("test2",man);
+            }
+        });
+
+        getObject.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Man man = TimeCache.getTimeCache(MainActivity.this).getValue("test2",Man.class);
+                ToastUtils.showMessage(MainActivity.this,"man-name:" + man.getName() + "man-age:" + man.getAge());
             }
         });
 

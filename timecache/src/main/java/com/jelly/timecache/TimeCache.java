@@ -15,13 +15,9 @@ public class TimeCache {
      * 数据库操作
      */
     private TimeCacheDbUtil timeCacheDbUtil;
-    private static TimeCache timeCache;
 
-    public static TimeCache getInstance(Context context){
-        if(timeCache == null){
-            timeCache = new TimeCache(context);
-        }
-        return timeCache;
+    public static TimeCache getTimeCache(Context context){
+        return new TimeCache(context);
     }
 
     private TimeCache(Context context){
@@ -30,24 +26,28 @@ public class TimeCache {
         }
     }
 
-    public void put(String key,String value){
-        timeCacheDbUtil.addCache(key,value);
+    public long put(String key,String value){
+        return timeCacheDbUtil.addCache(key,value);
     }
 
-    public void put(String key,int value){
-        put(key,String.valueOf(value));
+    public long put(String key,int value){
+        return put(key,String.valueOf(value));
     }
 
-    public void put(String key,double value){
-        put(key,String.valueOf(value));
+    public long put(String key,double value){
+        return put(key,String.valueOf(value));
     }
 
-    public void put(String key,float value){
-        put(key,String.valueOf(value));
+    public long put(String key,float value){
+        return put(key,String.valueOf(value));
+    }
+
+    public long put(String key,Object o){
+        return timeCacheDbUtil.addCache(key,o);
     }
 
     public <T> T getValue(String key,Class<T> c){
-        return (T) timeCacheDbUtil.getCacheByKey(key,c);
+        return timeCacheDbUtil.getCacheByKey(key,c);
     }
 
 }

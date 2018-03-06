@@ -25,33 +25,33 @@ public class TimeCacheDbHelper extends SQLiteOpenHelper {
     /**
      * id字段自动增长
      */
-    public static final String ID = "id";
+    public static final String ID_FIELD = "id";
     /**
      * 缓存的key
      */
-    public static final String KEY = "key";
+    public static final String KEY_FIELD = "key";
     /**
      * 缓存的value
      */
-    public static final String VALUE = "value";
+    public static final String VALUE_FIELD = "value";
     /**
      * 保存的时间
      */
-    public static final String SAVETIME = "savetime";
+    public static final String SAVE_TIME_FIELD = "save_time";
     /**
      * 缓存时间
      */
-    public static final String CACHE_TIME = "cachetime";
+    public static final String CACHE_TIME_FIELD = "cache_time";
 
     /**
      * 建表语句
      */
     private static final String CREATE_SQL = "CREATE TABLE IF NOT EXISTS " + DATABASE_TABLE
-            + "(" + ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + KEY + " TEXT,"
-            + VALUE + " TEXT,"
-            + SAVETIME + " TEXT,"
-            + CACHE_TIME + " INTEGER)";
+            + "(" + ID_FIELD + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + KEY_FIELD + " TEXT,"
+            + VALUE_FIELD + " TEXT,"
+            + SAVE_TIME_FIELD + " TEXT,"
+            + CACHE_TIME_FIELD + " INTEGER)";
 
     public TimeCacheDbHelper(Context context) {
         super(context, DATABASE_NAME, null, VERSION);

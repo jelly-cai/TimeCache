@@ -30,5 +30,16 @@
         android:layout_height="wrap_content"
         android:text="取double" />
 
+    <Button
+        android:id="@+id/btn_save_object"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="存对象" />
+
+    <Button
+        android:id="@+id/btn_get_object"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="取对象" />
 
 </LinearLayout>
