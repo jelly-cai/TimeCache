@@ -5,8 +5,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.jelly.db.CacheEditor;
 import com.jelly.timecache.TimeCache;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 
@@ -28,6 +31,10 @@ public class MainActivity extends AppCompatActivity {
     private Button getExists;
 
     private Button btnClearCache;
+
+    private Button batchSave;
+    private Button batchGet;
+    private Button batchDelete;
 
     private  int i = 1;
     private TimeCache timeCache;
@@ -54,7 +61,12 @@ public class MainActivity extends AppCompatActivity {
 
         btnClearCache = findViewById(R.id.btn_clear_cache);
 
-        timeCache = TimeCache.getTimeCache(getApplicationContext());
+        batchSave = findViewById(R.id.btn_batch_save);
+        batchGet = findViewById(R.id.btn_batch_get);
+
+        batchDelete = findViewById(R.id.btn_delete_batch);
+
+        timeCache = TimeCache.newTimeCache(getApplicationContext());
 
         saveInteger.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,6 +152,39 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 timeCache.clearCache();
+            }
+        });
+
+        batchSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CacheEditor editor = timeCache.getEditor();
+                editor.addCache("key1","value1");
+                editor.addCache("key2",3);
+                editor.addCache("key3",1.12);
+                editor.addCache("key4",1.22f);
+                Man man = new Man();
+                man.setName("JellyCai");
+                man.setAge(23);
+                editor.addCache("key5",man);
+                editor.commit();
+            }
+        });
+
+        batchGet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ToastUtils.showMessage(MainActivity.this,timeCache.get("key5",Man.class).getName());
+            }
+        });
+
+        batchDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Set<String> keys = new HashSet<>();
+                keys.add("key1");
+                keys.add("key2");
+                timeCache.removeCache(keys);
             }
         });
 

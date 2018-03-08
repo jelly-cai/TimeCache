@@ -3,8 +3,10 @@ package com.jelly.timecache;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.jelly.db.CacheEditor;
 import com.jelly.db.TimeCacheDbUtil;
 
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -18,8 +20,9 @@ public class TimeCache {
      * 数据库操作
      */
     private TimeCacheDbUtil timeCacheDbUtil;
+    private CacheEditor editor;
 
-    public static TimeCache getTimeCache(Context context){
+    public static TimeCache newTimeCache(Context context){
         return new TimeCache(context);
     }
 
@@ -27,6 +30,17 @@ public class TimeCache {
         if(timeCacheDbUtil == null){
             timeCacheDbUtil = new TimeCacheDbUtil(context);
         }
+    }
+
+    /**
+     * 获得批量操作缓存对象
+     * @return
+     */
+    public CacheEditor getEditor(){
+        if(editor == null){
+            editor = new CacheEditor(timeCacheDbUtil);
+        }
+        return editor;
     }
 
     /**
@@ -198,6 +212,14 @@ public class TimeCache {
      */
     public void setCacheTime(long time){
         setCacheTime(time,TimeUnit.DAYS);
+    }
+
+    /**
+     * 批量删除缓存
+     * @param keys
+     */
+    public void removeCache(Set<String> keys){
+        timeCacheDbUtil.deleteBatch(keys);
     }
 
 }
