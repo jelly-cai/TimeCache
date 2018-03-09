@@ -139,4 +139,22 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btn_apply_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="异步批量存入" />
+        
+        <Button
+            android:id="@+id/btn_apply_get"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="取出" />
+
+    </LinearLayout>
+
 </LinearLayout>

@@ -1,6 +1,7 @@
 package com.jelly.timecache;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.text.TextUtils;
 
 import com.jelly.db.CacheEditor;
@@ -49,23 +50,23 @@ public class TimeCache {
      * @param value
      * @return
      */
-    public long put(String key,String value){
+    public boolean put(String key,String value){
         return timeCacheDbUtil.addCache(key,value);
     }
 
-    public long put(String key,Integer value){
+    public boolean put(String key,Integer value){
         return put(key,String.valueOf(value));
     }
 
-    public long put(String key,Double value){
+    public boolean put(String key,Double value){
         return put(key,String.valueOf(value));
     }
 
-    public long put(String key,Float value){
+    public boolean put(String key,Float value){
         return put(key,String.valueOf(value));
     }
 
-    public long put(String key,Object o){
+    public boolean put(String key,Object o){
         return timeCacheDbUtil.addCache(key,o);
     }
 
@@ -161,12 +162,20 @@ public class TimeCache {
     }
 
     /**
-     * 删除数据
+     * 删除缓存数据
      * @param key
      * @return
      */
-    public long remove(String key){
+    public boolean remove(String key){
         return timeCacheDbUtil.deleteCache(key);
+    }
+
+    /**
+     * 批量删除缓存
+     * @param keys
+     */
+    public boolean remove(Set<String> keys){
+        return timeCacheDbUtil.deleteBatch(keys);
     }
 
     /**
@@ -175,6 +184,7 @@ public class TimeCache {
     public void clearCache(){
         timeCacheDbUtil.cleanCache();
     }
+
 
     /**
      * 设置缓存时间
@@ -212,14 +222,6 @@ public class TimeCache {
      */
     public void setCacheTime(long time){
         setCacheTime(time,TimeUnit.DAYS);
-    }
-
-    /**
-     * 批量删除缓存
-     * @param keys
-     */
-    public void removeCache(Set<String> keys){
-        timeCacheDbUtil.deleteBatch(keys);
     }
 
 }

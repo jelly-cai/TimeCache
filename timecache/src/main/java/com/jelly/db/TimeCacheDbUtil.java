@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Author YC
@@ -23,6 +24,8 @@ public class TimeCacheDbUtil {
 
     private Context context;
     private static TimeCacheDbHelper dbHelper;
+    private SQLiteDatabase db;
+    private AtomicInteger openCounter = new AtomicInteger();
     /**
      * 默认保存一周,时间单位为毫秒
      */
@@ -52,20 +55,31 @@ public class TimeCacheDbUtil {
 
     /**
      * 获得写数据的数据库操作的对象
-     * @return
      */
-    private SQLiteDatabase getWritableDatabase(){
+    private synchronized void getWritableDatabase(){
         initDbHelper();
-        return dbHelper.getWritableDatabase();
+        if(openCounter.incrementAndGet() == 1){
+            db = dbHelper.getWritableDatabase();
+        }
     }
 
     /**
      * 获得读数据的数据库操作的对象
-     * @return
      */
-    private SQLiteDatabase getReadableDatabase(){
+    private synchronized void getReadableDatabase(){
         initDbHelper();
-        return dbHelper.getWritableDatabase();
+        if(openCounter.incrementAndGet() == 1){
+            db = dbHelper.getWritableDatabase();
+        }
+    }
+
+    /**
+     * 关闭数据库连接
+     */
+    private void closeDataBase(){
+        if(openCounter.incrementAndGet() == 0){
+            db.close();
+        }
     }
 
     /**
@@ -74,26 +88,37 @@ public class TimeCacheDbUtil {
      * @param value 值
      * @return
      */
-    public long addCache(String key,Object value){
-        SQLiteDatabase db = getWritableDatabase();
+    public boolean addCache(String key,Object value){
+        getWritableDatabase();
+
         deleteCache(key,db); //清除已存在缓存
+
         ContentValues increase = new ContentValues();
         increase.put(TimeCacheDbHelper.KEY_FIELD,key);
         String values = value.getClass().isPrimitive() ? value + "" : new Gson().toJson(value);//判断是否为基本数据类型
         increase.put(TimeCacheDbHelper.VALUE_FIELD,values);
         increase.put(TimeCacheDbHelper.SAVE_TIME_FIELD, System.currentTimeMillis());
         increase.put(TimeCacheDbHelper.CACHE_TIME_FIELD, CACHE_TIME);
-        long status = db.insert(TimeCacheDbHelper.DATABASE_TABLE, null, increase);
-        db.close();
-        return status;
+        long rowID = db.insert(TimeCacheDbHelper.DATABASE_TABLE, null, increase);
+
+        closeDataBase();
+
+        if(rowID == -1){
+            return false;
+        }else{
+            return true;
+        }
     }
 
     /**
      * 批量存入
      * @param map key -valuer
      */
-    public void addBatchCache(Map<String,Object> map){
-        SQLiteDatabase db = getWritableDatabase();
+    public boolean addBatchCache(Map<String,Object> map){
+        Thread t = Thread.currentThread();
+        String name = t.getName();
+        Log.d(TAG, "addBatchCache: " + name);
+        getWritableDatabase();
         deleteBatch(map.keySet(),db);
         StringBuilder sql = new StringBuilder();
         sql.append(" INSERT INTO ")
@@ -117,7 +142,8 @@ public class TimeCacheDbUtil {
         }
         db.setTransactionSuccessful();
         db.endTransaction();
-        db.close();
+        closeDataBase();
+        return true;
     }
     /**
      * 根据key获取值
@@ -126,7 +152,7 @@ public class TimeCacheDbUtil {
      * @return
      */
     public <T> T  getCacheByKey (String key,Class<T> clazz){
-        SQLiteDatabase db = getReadableDatabase();
+        getReadableDatabase();
         Cursor cur =  db.query(TimeCacheDbHelper.DATABASE_TABLE, null, TimeCacheDbHelper.KEY_FIELD + " = ?", new String[]{ key }, null, null, null);
         if(cur != null && cur.getCount() > 0){
             cur.moveToNext();
@@ -141,7 +167,7 @@ public class TimeCacheDbUtil {
             return null;
         }
         cur.close();
-        db.close();
+        closeDataBase();
         return null;
     }
 
@@ -151,8 +177,9 @@ public class TimeCacheDbUtil {
      */
     private void deleteBatch(Set<String> keys,SQLiteDatabase db){
         if(keys == null || keys.size() == 0){
-            return;
+            throw new IllegalArgumentException("keys值不能为空和大小不能为0");
         }
+
         StringBuilder buffer = new StringBuilder();
         buffer.append("delete from ")
                 .append(TimeCacheDbHelper.DATABASE_TABLE)
@@ -164,20 +191,18 @@ public class TimeCacheDbUtil {
         }
         buffer.deleteCharAt(buffer.length() - 1);
         buffer.append(")");
-        db.execSQL(buffer.toString());//先清空存在的key
+        db.execSQL(buffer.toString());
     }
 
     /**
      * 批量清空keys
      * @param keys
      */
-    public void deleteBatch(Set<String> keys){
-        if(keys == null || keys.size() == 0){
-            return;
-        }
-        SQLiteDatabase db = getReadableDatabase();
+    public boolean deleteBatch(Set<String> keys){
+        getReadableDatabase();
         deleteBatch(keys,db);
-        db.close();
+        closeDataBase();
+        return true;
     }
 
    /**
@@ -185,11 +210,25 @@ public class TimeCacheDbUtil {
      * @param key
      * @return
      */
-    public long deleteCache(String key){
-        SQLiteDatabase db= getWritableDatabase();
+    public boolean deleteCache(String key){
+        getWritableDatabase();
         int status = db.delete(TimeCacheDbHelper.DATABASE_TABLE, TimeCacheDbHelper.KEY_FIELD + " = ?", new String[]{key});
-        db.close();
-        return status;
+        closeDataBase();
+        if(status == 0){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    /**
+     * 删除key对应的缓存,不会关闭数据库连接
+     * @param key
+     * @param db 数据库对象
+     * @return
+     */
+    private void deleteCache(String key, SQLiteDatabase db){
+        db.delete(TimeCacheDbHelper.DATABASE_TABLE, TimeCacheDbHelper.KEY_FIELD + " = ?", new String[]{key});
     }
 
     /**
@@ -207,24 +246,15 @@ public class TimeCacheDbUtil {
         }
     }
 
-    /**
-     * 删除key对应的缓存,不会关闭数据库连接
-     * @param key
-     * @param db 数据库对象
-     * @return
-     */
-    public long deleteCache(String key, SQLiteDatabase db){
-        int status = db.delete(TimeCacheDbHelper.DATABASE_TABLE, TimeCacheDbHelper.KEY_FIELD + " = ?", new String[]{key});
-        return status;
-    }
+
 
     /**
      * 清空所有缓存
      */
     public void cleanCache(){
-        SQLiteDatabase db = getWritableDatabase();
+        getWritableDatabase();
         db.execSQL("delete from "+TimeCacheDbHelper.DATABASE_TABLE);
-        db.close();
+        closeDataBase();
     }
 
 }

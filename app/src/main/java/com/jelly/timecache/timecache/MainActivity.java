@@ -2,6 +2,7 @@ package com.jelly.timecache.timecache;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -14,6 +15,8 @@ import java.util.concurrent.TimeUnit;
 
 
 public class MainActivity extends AppCompatActivity {
+
+    public static final String TAG = "MainActivity";
 
     private Button saveInteger;
     private Button getInteger;
@@ -35,6 +38,9 @@ public class MainActivity extends AppCompatActivity {
     private Button batchSave;
     private Button batchGet;
     private Button batchDelete;
+
+    private Button applySave;
+    private Button applyGet;
 
     private  int i = 1;
     private TimeCache timeCache;
@@ -65,6 +71,9 @@ public class MainActivity extends AppCompatActivity {
         batchGet = findViewById(R.id.btn_batch_get);
 
         batchDelete = findViewById(R.id.btn_delete_batch);
+
+        applySave = findViewById(R.id.btn_apply_save);
+        applyGet = findViewById(R.id.btn_apply_get);
 
         timeCache = TimeCache.newTimeCache(getApplicationContext());
 
@@ -181,10 +190,26 @@ public class MainActivity extends AppCompatActivity {
         batchDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Set<String> keys = new HashSet<>();
-                keys.add("key1");
-                keys.add("key2");
-                timeCache.removeCache(keys);
+                Log.d(TAG, "onClick: " + timeCache.remove("key5"));
+            }
+        });
+
+
+        applySave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CacheEditor editor = timeCache.getEditor();
+                for(int i = 10;i<10000;i++){
+                    editor.addCache("key" + i, "value" + i);
+                }
+                editor.apply();
+            }
+        });
+
+        applyGet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ToastUtils.showMessage(MainActivity.this,timeCache.getString("key9999"));
             }
         });
 
