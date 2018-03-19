@@ -9,8 +9,6 @@ import android.widget.Button;
 import com.jelly.db.CacheEditor;
 import com.jelly.timecache.TimeCache;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 
