@@ -35,7 +35,7 @@ public class TimeCache {
 
     /**
      * 获得批量操作缓存对象
-     * @return
+     * @return CacheEditor
      */
     public CacheEditor getEditor(){
         if(editor == null){
@@ -46,9 +46,9 @@ public class TimeCache {
 
     /**
      * 存数据
-     * @param key
-     * @param value
-     * @return
+     * @param key 键
+     * @param value 值
+     * @return boolean 是否成功
      */
     public boolean put(String key,String value){
         return timeCacheDbUtil.addCache(key,value);
@@ -72,10 +72,10 @@ public class TimeCache {
 
     /**
      * 取数据
-     * @param key
-     * @param c
-     * @param <T>
-     * @return
+     * @param key 键
+     * @param c 想要转换为的数据类型
+     * @param <T> 类型
+     * @return T
      */
     public <T> T get(String key, Class<T> c){
         return timeCacheDbUtil.getCacheByKey(key,c);
@@ -83,9 +83,9 @@ public class TimeCache {
 
     /**
      * 取出字符串缓存数据
-     * @param key
+     * @param key 键
      * @param defaultValue 默认值
-     * @return
+     * @return String
      */
     public String getString(String key,String defaultValue){
         String result = get(key,String.class);
@@ -94,8 +94,8 @@ public class TimeCache {
 
     /**
      * 取出字符串缓存数据，默认值为""
-     * @param key
-     * @return
+     * @param key 键
+     * @return String
      */
     public String getString(String key){
         return getString(key,"");
@@ -103,9 +103,9 @@ public class TimeCache {
 
     /**
      * 取出整型数据
-     * @param key
+     * @param key 键
      * @param defaultValue 默认值
-     * @return
+     * @return Integer
      */
     public Integer getInteger(String key,Integer defaultValue){
         Integer result = get(key,Integer.class);
@@ -114,8 +114,8 @@ public class TimeCache {
 
     /**
      * 取出整型数据
-     * @param key
-     * @return
+     * @param key 键
+     * @return Integer
      */
     public Integer getInteger(String key){
         return getInteger(key,0);
@@ -123,9 +123,9 @@ public class TimeCache {
 
     /**
      * 获取double数据
-     * @param key
+     * @param key 键
      * @param defaultValue 默认值
-     * @return
+     * @return Double
      */
     public Double getDouble(String key,double defaultValue){
         Double result = get(key,Double.class);
@@ -134,8 +134,8 @@ public class TimeCache {
 
     /**
      * 获得Double数据
-     * @param key
-     * @return
+     * @param key 键
+     * @return Double
      */
     public Double getDouble(String key){
         return getDouble(key,0);
@@ -143,9 +143,9 @@ public class TimeCache {
 
     /**
      * 获得float数据
-     * @param key
+     * @param key 键
      * @param defaultValue 默认值
-     * @return
+     * @return Float
      */
     public Float getFloat(String key,float defaultValue){
         Float result = get(key,Float.class);
@@ -154,8 +154,8 @@ public class TimeCache {
 
     /**
      * 获得Float数据
-     * @param key
-     * @return
+     * @param key 键
+     * @return Float
      */
     public float getFloat(String key){
         return getFloat(key,0);
@@ -163,7 +163,7 @@ public class TimeCache {
 
     /**
      * 删除缓存数据
-     * @param key
+     * @param key 键
      * @return
      */
     public boolean remove(String key){
@@ -172,7 +172,7 @@ public class TimeCache {
 
     /**
      * 批量删除缓存
-     * @param keys
+     * @param keys 键集合
      */
     public boolean remove(Set<String> keys){
         return timeCacheDbUtil.deleteBatch(keys);
@@ -207,10 +207,10 @@ public class TimeCache {
 
     /**
      * key是否存在
-     * @param key
-     * @param c
-     * @param <T>
-     * @return
+     * @param key 键
+     * @param c 需要转换的数据类型
+     * @param <T> 泛型（Integer.class,String.class,实体类.class）
+     * @return Boolean 是否存在
      */
     public <T> boolean isExists(String key,Class<T> c){
         return timeCacheDbUtil.isExists(key,c);
@@ -218,7 +218,7 @@ public class TimeCache {
 
     /**
      * 设置缓存时间，单位为天
-     * @param time
+     * @param time 缓存时间
      */
     public void setCacheTime(long time){
         setCacheTime(time,TimeUnit.DAYS);

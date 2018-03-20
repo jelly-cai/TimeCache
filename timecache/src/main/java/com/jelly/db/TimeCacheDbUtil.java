@@ -47,7 +47,7 @@ public class TimeCacheDbUtil {
 
     /**
      * 设置缓存时间
-     * @param cacheTime
+     * @param cacheTime 缓存时间
      */
     public void setCacheTime(Long cacheTime) {
         this.CACHE_TIME = cacheTime;
@@ -86,7 +86,7 @@ public class TimeCacheDbUtil {
      * 新增缓存,如果缓存存在，先删除再新增
      * @param key 键
      * @param value 值
-     * @return
+     * @return Boolean 是否添加成功
      */
     public boolean addCache(String key,Object value){
         getWritableDatabase();
@@ -147,9 +147,9 @@ public class TimeCacheDbUtil {
     }
     /**
      * 根据key获取值
-     * @param key
-     * @param clazz
-     * @return
+     * @param key 键
+     * @param clazz 需要转换的类型
+     * @return T
      */
     public <T> T  getCacheByKey (String key,Class<T> clazz){
         getReadableDatabase();
@@ -173,7 +173,7 @@ public class TimeCacheDbUtil {
 
     /**
      * 批量清空keys 不关闭连接
-     * @param keys
+     * @param keys 键集合
      */
     private void deleteBatch(Set<String> keys,SQLiteDatabase db){
         if(keys == null || keys.size() == 0){
@@ -196,7 +196,7 @@ public class TimeCacheDbUtil {
 
     /**
      * 批量清空keys
-     * @param keys
+     * @param keys 键集合
      */
     public boolean deleteBatch(Set<String> keys){
         getReadableDatabase();
@@ -207,8 +207,8 @@ public class TimeCacheDbUtil {
 
    /**
      * 删除key对应的缓存，会关闭数据库连接
-     * @param key
-     * @return
+     * @param key 键
+     * @return Boolean 是否删除成功
      */
     public boolean deleteCache(String key){
         getWritableDatabase();
@@ -223,9 +223,8 @@ public class TimeCacheDbUtil {
 
     /**
      * 删除key对应的缓存,不会关闭数据库连接
-     * @param key
+     * @param key 键
      * @param db 数据库对象
-     * @return
      */
     private void deleteCache(String key, SQLiteDatabase db){
         db.delete(TimeCacheDbHelper.DATABASE_TABLE, TimeCacheDbHelper.KEY_FIELD + " = ?", new String[]{key});
@@ -233,10 +232,10 @@ public class TimeCacheDbUtil {
 
     /**
      * 是否存在Key
-     * @param key
-     * @param c
-     * @param <T>
-     * @return
+     * @param key 键
+     * @param c 转换类的Class
+     * @param <T> 泛型
+     * @return Boolean 是否存在
      */
     public <T> boolean isExists(String key,Class<T> c){
         if(getCacheByKey(key,c) == null){
@@ -245,8 +244,6 @@ public class TimeCacheDbUtil {
             return true;
         }
     }
-
-
 
     /**
      * 清空所有缓存
