@@ -164,7 +164,7 @@ public class TimeCache {
     /**
      * 删除缓存数据
      * @param key 键
-     * @return
+     * @return Boolean是否删除成功
      */
     public boolean remove(String key){
         return timeCacheDbUtil.deleteCache(key);
