@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 CacheEditor editor = timeCache.getEditor();
                 editor.addCache("key1","value1");
-                editor.addCache("key2",3);
+                editor.addCache("key2ppip",3);
                 editor.addCache("key3",1.12);
                 editor.addCache("key4",1.22f);
                 Man man = new Man();
