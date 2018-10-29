@@ -41,14 +41,6 @@ public interface Editor {
     Editor addCache(String key,Float value);
 
     /**
-     * 添加缓存
-     * @param key 键
-     * @param value 对象
-     * @return Editor
-     */
-    Editor addCache(String key,Object value);
-
-    /**
      * 删除缓存
      * @param key 键
      * @return Editor

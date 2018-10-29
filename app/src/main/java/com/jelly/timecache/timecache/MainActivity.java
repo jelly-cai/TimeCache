@@ -22,9 +22,6 @@ public class MainActivity extends AppCompatActivity {
     private Button saveDouble;
     private Button getDouble;
 
-    private Button saveObject;
-    private Button getObject;
-
     private Button saveTime;
     private Button getTime;
 
@@ -53,9 +50,6 @@ public class MainActivity extends AppCompatActivity {
 
         saveDouble = findViewById(R.id.btn_save_double);
         getDouble = findViewById(R.id.btn_get_double);
-
-        saveObject = findViewById(R.id.btn_save_object);
-        getObject = findViewById(R.id.btn_get_object);
 
         saveTime = findViewById(R.id.btn_save_time);
         getTime = findViewById(R.id.btn_get_time);
@@ -104,24 +98,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        saveObject.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Man man = new Man();
-                man.setName("JellyCai");
-                man.setAge(23);
-                timeCache.put("test2",man);
-            }
-        });
-
-        getObject.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Man man = timeCache.get("test2",Man.class);
-                ToastUtils.showMessage(MainActivity.this,"man-name:" + man.getName() + "man-age:" + man.getAge());
-            }
-        });
-
         saveTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -140,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
         saveExists.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!timeCache.isExists("test4",String.class)){
+                if(!timeCache.isExists("test4")){
                     timeCache.put("test4","test4");
                 }
             }
@@ -149,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         getExists.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(timeCache.isExists("test4",String.class)){
+                if(timeCache.isExists("test4")){
                     ToastUtils.showMessage(MainActivity.this,timeCache.getString("test4"));
                 }
             }
@@ -170,10 +146,6 @@ public class MainActivity extends AppCompatActivity {
                 editor.addCache("key2ppip",3);
                 editor.addCache("key3",1.12);
                 editor.addCache("key4",1.22f);
-                Man man = new Man();
-                man.setName("JellyCai");
-                man.setAge(23);
-                editor.addCache("key5",man);
                 editor.commit();
             }
         });
@@ -181,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
         batchGet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ToastUtils.showMessage(MainActivity.this,timeCache.get("key5",Man.class).getName());
+                ToastUtils.showMessage(MainActivity.this,timeCache.getString("key1"));
             }
         });
 

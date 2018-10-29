@@ -51,12 +51,6 @@ public class CacheEditor implements Editor{
     }
 
     @Override
-    public Editor addCache(String key,Object value){
-        cacheMap.put(key,value);
-        return this;
-    }
-
-    @Override
     public Editor removeCache(String key){
         cacheMap.remove(key);
         return this;

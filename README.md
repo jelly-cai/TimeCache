@@ -3,11 +3,11 @@
 TimeCache是在Android上基于SqlLite的键值对缓存工具
 ### 使用
     Gradle
-        compile 'com.jelly:timecache:1.0.1
+        compile 'com.jelly:timecache:1.1.0
 ### 具体使用
 #### 快速开始
 ##### 操作单个数据
->TimeCache提供了多种数据类型的put方法(可以直接存储对象)
+>TimeCache提供了基本数据类型的put方法
 
     //获取TimeCache对象
     TimeCache timeCache = TimeCache.newTimeCache(getApplicationContext());
@@ -19,8 +19,7 @@ TimeCache是在Android上基于SqlLite的键值对缓存工具
     //第二个参数为时间单位
     timeCache.setCacheTime(1, TimeUnit.SECONDS);
 ##### 判断缓存数据是否存在
-    //第二个参数为存储的数据类型
-    timeCache.isExists("key",String.class)
+    timeCache.isExists("key")
 ##### 删除某个缓存
     timeCache.remove("key")
 ##### 清空缓存
@@ -35,10 +34,6 @@ TimeCache是在Android上基于SqlLite的键值对缓存工具
     editor.addCache("key2ppip",3);
     editor.addCache("key3",1.12);
     editor.addCache("key4",1.22f);
-    Man man = new Man();
-    man.setName("JellyCai");
-    man.setAge(23);
-    editor.addCache("key5",man);
     //同步提交数据(异步提交数据:editor.apply();)
     editor.commit();
 

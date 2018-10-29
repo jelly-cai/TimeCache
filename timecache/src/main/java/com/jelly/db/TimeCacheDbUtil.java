@@ -7,8 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
-import com.google.gson.Gson;
-
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -95,7 +93,7 @@ public class TimeCacheDbUtil {
 
         ContentValues increase = new ContentValues();
         increase.put(TimeCacheDbHelper.KEY_FIELD,key);
-        String values = value.getClass().isPrimitive() ? value + "" : new Gson().toJson(value);//判断是否为基本数据类型
+        String values = value.toString();//判断是否为基本数据类型
         increase.put(TimeCacheDbHelper.VALUE_FIELD,values);
         increase.put(TimeCacheDbHelper.SAVE_TIME_FIELD, System.currentTimeMillis());
         increase.put(TimeCacheDbHelper.CACHE_TIME_FIELD, CACHE_TIME);
@@ -132,7 +130,7 @@ public class TimeCacheDbUtil {
         SQLiteStatement stmt = db.compileStatement(sql.toString());
         for(Map.Entry<String,Object> entry:map.entrySet()){
             Object valuer = entry.getValue();
-            String valuers = valuer.getClass().isPrimitive() ? valuer.toString() : new Gson().toJson(valuer);
+            String valuers = valuer.toString();
             stmt.bindString(1,entry.getKey());
             stmt.bindString(2,valuers);
             stmt.bindString(3,System.currentTimeMillis() + "");
@@ -149,10 +147,9 @@ public class TimeCacheDbUtil {
     /**
      * 根据key获取值
      * @param key 键
-     * @param clazz 需要转换的类型
      * @return T
      */
-    public <T> T  getCacheByKey (String key,Class<T> clazz){
+    public String  getCacheByKey (String key){
         getReadableDatabase();
         Cursor cur =  db.query(TimeCacheDbHelper.DATABASE_TABLE, null, TimeCacheDbHelper.KEY_FIELD + " = ?", new String[]{ key }, null, null, null);
         if(cur != null && cur.getCount() > 0){
@@ -163,7 +160,7 @@ public class TimeCacheDbUtil {
             String value = cur.getString(cur.getColumnIndex(TimeCacheDbHelper.VALUE_FIELD));
             if((curTime - saveTime) < cacheTime){
                 //在保存时间内
-                return new Gson().fromJson(value,clazz);
+                return value;
             }
             return null;
         }
@@ -234,12 +231,10 @@ public class TimeCacheDbUtil {
     /**
      * 是否存在Key
      * @param key 键
-     * @param c 转换类的Class
-     * @param <T> 泛型
      * @return Boolean 是否存在
      */
-    public <T> boolean isExists(String key,Class<T> c){
-        if(getCacheByKey(key,c) == null){
+    public boolean isExists(String key){
+        if(getCacheByKey(key) == null){
             return false;
         }else{
             return true;

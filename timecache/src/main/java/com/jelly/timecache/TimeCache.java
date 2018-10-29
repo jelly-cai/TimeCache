@@ -66,19 +66,13 @@ public class TimeCache {
         return put(key,String.valueOf(value));
     }
 
-    public boolean put(String key,Object o){
-        return timeCacheDbUtil.addCache(key,o);
-    }
-
     /**
      * 取数据
      * @param key 键
-     * @param c 想要转换为的数据类型
-     * @param <T> 类型
      * @return T
      */
-    public <T> T get(String key, Class<T> c){
-        return timeCacheDbUtil.getCacheByKey(key,c);
+    private String get(String key){
+        return timeCacheDbUtil.getCacheByKey(key);
     }
 
     /**
@@ -88,7 +82,7 @@ public class TimeCache {
      * @return String
      */
     public String getString(String key,String defaultValue){
-        String result = get(key,String.class);
+        String result = get(key);
         return TextUtils.isEmpty(result) ? defaultValue : result;
     }
 
@@ -108,8 +102,12 @@ public class TimeCache {
      * @return Integer
      */
     public Integer getInteger(String key,Integer defaultValue){
-        Integer result = get(key,Integer.class);
-        return result == null ? defaultValue : result;
+        String result = get(key);
+        if(TextUtils.isEmpty(result)){
+            return defaultValue;
+        }else{
+            return Integer.parseInt(get(key));
+        }
     }
 
     /**
@@ -128,8 +126,12 @@ public class TimeCache {
      * @return Double
      */
     public Double getDouble(String key,double defaultValue){
-        Double result = get(key,Double.class);
-        return result == null ? defaultValue : result;
+        String result = get(key);
+        if(TextUtils.isEmpty(result)){
+            return defaultValue;
+        }else{
+            return Double.parseDouble(get(key));
+        }
     }
 
     /**
@@ -148,8 +150,12 @@ public class TimeCache {
      * @return Float
      */
     public Float getFloat(String key,float defaultValue){
-        Float result = get(key,Float.class);
-        return result == null ? defaultValue : result;
+        String result = get(key);
+        if(TextUtils.isEmpty(result)){
+            return defaultValue;
+        }else{
+            return Float.parseFloat(result);
+        }
     }
 
     /**
@@ -208,12 +214,10 @@ public class TimeCache {
     /**
      * key是否存在
      * @param key 键
-     * @param c 需要转换的数据类型
-     * @param <T> 泛型（Integer.class,String.class,实体类.class）
      * @return Boolean 是否存在
      */
-    public <T> boolean isExists(String key,Class<T> c){
-        return timeCacheDbUtil.isExists(key,c);
+    public boolean isExists(String key){
+        return timeCacheDbUtil.isExists(key);
     }
 
     /**
