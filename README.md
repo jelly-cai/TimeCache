@@ -3,7 +3,7 @@
 TimeCache是在Android上基于SqlLite的键值对缓存工具
 ### 使用
     Gradle
-        compile 'com.jelly:timecache:1.1.0
+        compile 'com.jelly:timecache:1.2.0
 ### 具体使用
 #### 快速开始
 ##### 操作单个数据
@@ -15,6 +15,8 @@ TimeCache是在Android上基于SqlLite的键值对缓存工具
     timeCache.put("key",i);
     //根据键取出数据
     timeCache.getInteger("key");
+    //根据键取出数据，不判断时间
+    timeCache.getIntegerNoTime("key");
 ##### 设置缓存时间
     //第二个参数为时间单位
     timeCache.setCacheTime(1, TimeUnit.SECONDS);
