@@ -75,6 +75,10 @@ public class TimeCache {
         return timeCacheDbUtil.getCacheByKey(key);
     }
 
+    private String getNoTime(String key){
+        return timeCacheDbUtil.getCacheByKeyNoTime(key);
+    }
+
     /**
      * 取出字符串缓存数据
      * @param key 键
@@ -87,12 +91,32 @@ public class TimeCache {
     }
 
     /**
+     * 取出字符串缓存数据
+     * @param key 键
+     * @param defaultValue 默认值
+     * @return String
+     */
+    public String getStringNoTime(String key,String defaultValue){
+        String result = getNoTime(key);
+        return TextUtils.isEmpty(result) ? defaultValue : result;
+    }
+
+    /**
      * 取出字符串缓存数据，默认值为""
      * @param key 键
      * @return String
      */
     public String getString(String key){
         return getString(key,"");
+    }
+
+    /**
+     * 取出字符串缓存数据，默认值为""
+     * @param key 键
+     * @return String
+     */
+    public String getStringNoTime(String key){
+        return getStringNoTime(key,"");
     }
 
     /**
@@ -113,10 +137,34 @@ public class TimeCache {
     /**
      * 取出整型数据
      * @param key 键
+     * @param defaultValue 默认值
+     * @return Integer
+     */
+    public Integer getIntegerNoTime(String key,Integer defaultValue){
+        String result = getNoTime(key);
+        if(TextUtils.isEmpty(result)){
+            return defaultValue;
+        }else{
+            return Integer.parseInt(get(key));
+        }
+    }
+
+    /**
+     * 取出整型数据
+     * @param key 键
      * @return Integer
      */
     public Integer getInteger(String key){
         return getInteger(key,0);
+    }
+
+    /**
+     * 取出整型数据
+     * @param key 键
+     * @return Integer
+     */
+    public Integer getIntegerNoTime(String key){
+        return getIntegerNoTime(key,0);
     }
 
     /**
@@ -135,12 +183,36 @@ public class TimeCache {
     }
 
     /**
+     * 获取double数据
+     * @param key 键
+     * @param defaultValue 默认值
+     * @return Double
+     */
+    public Double getDoubleNoTime(String key,double defaultValue){
+        String result = getNoTime(key);
+        if(TextUtils.isEmpty(result)){
+            return defaultValue;
+        }else{
+            return Double.parseDouble(get(key));
+        }
+    }
+
+    /**
      * 获得Double数据
      * @param key 键
      * @return Double
      */
     public Double getDouble(String key){
         return getDouble(key,0);
+    }
+
+    /**
+     * 获得Double数据
+     * @param key 键
+     * @return Double
+     */
+    public Double getDoubleNoTime(String key){
+        return getDoubleNoTime(key,0);
     }
 
     /**
@@ -159,12 +231,36 @@ public class TimeCache {
     }
 
     /**
+     * 获得float数据
+     * @param key 键
+     * @param defaultValue 默认值
+     * @return Float
+     */
+    public Float getFloatNoTime(String key,float defaultValue){
+        String result = getNoTime(key);
+        if(TextUtils.isEmpty(result)){
+            return defaultValue;
+        }else{
+            return Float.parseFloat(result);
+        }
+    }
+
+    /**
      * 获得Float数据
      * @param key 键
      * @return Float
      */
     public float getFloat(String key){
         return getFloat(key,0);
+    }
+
+    /**
+     * 获得Float数据
+     * @param key 键
+     * @return Float
+     */
+    public float getFloatNoTime(String key){
+        return getFloatNoTime(key,0);
     }
 
     /**

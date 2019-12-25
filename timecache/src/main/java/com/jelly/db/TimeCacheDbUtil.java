@@ -151,20 +151,51 @@ public class TimeCacheDbUtil {
      */
     public String  getCacheByKey (String key){
         getReadableDatabase();
-        Cursor cur =  db.query(TimeCacheDbHelper.DATABASE_TABLE, null, TimeCacheDbHelper.KEY_FIELD + " = ?", new String[]{ key }, null, null, null);
-        if(cur != null && cur.getCount() > 0){
-            cur.moveToNext();
-            long cacheTime = cur.getLong(cur.getColumnIndex(TimeCacheDbHelper.CACHE_TIME_FIELD));
-            long saveTime = Long.parseLong(cur.getString(cur.getColumnIndex(TimeCacheDbHelper.SAVE_TIME_FIELD)));
-            long curTime = System.currentTimeMillis();
-            String value = cur.getString(cur.getColumnIndex(TimeCacheDbHelper.VALUE_FIELD));
-            if((curTime - saveTime) < cacheTime){
-                //在保存时间内
-                return value;
+        Cursor cur = null;
+        try{
+            cur =  db.query(TimeCacheDbHelper.DATABASE_TABLE, null, TimeCacheDbHelper.KEY_FIELD + " = ?", new String[]{ key }, null, null, null);
+            if(cur != null && cur.getCount() > 0){
+                cur.moveToNext();
+                long cacheTime = cur.getLong(cur.getColumnIndex(TimeCacheDbHelper.CACHE_TIME_FIELD));
+                long saveTime = Long.parseLong(cur.getString(cur.getColumnIndex(TimeCacheDbHelper.SAVE_TIME_FIELD)));
+                long curTime = System.currentTimeMillis();
+                String value = cur.getString(cur.getColumnIndex(TimeCacheDbHelper.VALUE_FIELD));
+                if((curTime - saveTime) < cacheTime){
+                    //在保存时间内
+                    return value;
+                }
+                return null;
             }
-            return null;
+            cur.close();
+        }finally {
+            if(cur != null){
+                cur.close();
+            }
         }
-        cur.close();
+        closeDataBase();
+        return null;
+    }
+
+    /**
+     * 根据key获取值
+     * @param key 键
+     * @return T
+     */
+    public String  getCacheByKeyNoTime (String key){
+        getReadableDatabase();
+        Cursor cur = null;
+        try {
+            cur =  db.query(TimeCacheDbHelper.DATABASE_TABLE, null, TimeCacheDbHelper.KEY_FIELD + " = ?", new String[]{ key }, null, null, null);
+            if(cur != null && cur.getCount() > 0){
+                cur.moveToNext();
+                return cur.getString(cur.getColumnIndex(TimeCacheDbHelper.VALUE_FIELD));
+            }
+            cur.close();
+        }finally {
+            if(cur != null){
+                cur.close();
+            }
+        }
         closeDataBase();
         return null;
     }
@@ -203,7 +234,7 @@ public class TimeCacheDbUtil {
         return true;
     }
 
-   /**
+    /**
      * 删除key对应的缓存，会关闭数据库连接
      * @param key 键
      * @return Boolean 是否删除成功
